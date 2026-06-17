@@ -1,25 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import BeefCutsHero from "../components/ui/BeefCutsHero";
-
-// ─────────────────────────────────────────────────────────────
-// The interactive beef-cuts diagram (hero section with the cow
-// illustration + clickable primal cut zones + dark cuts modal)
-// now lives ENTIRELY inside components/ui/BeefCutsHero.tsx.
-// It is rendered once below via <BeefCutsHero />.
-//
-// Using a RELATIVE import path here ("../components/ui/...")
-// instead of an "@/" alias, since this project's tsconfig.json
-// does not have a confirmed "@/*" path alias configured. If you
-// add one later (Next.js scaffolds this by default), you can
-// switch this back to "@/components/ui/BeefCutsHero" if you prefer.
-//
-// Previously this file had its own separate, duplicate copy of
-// that same feature with a different (and incorrectly measured,
-// overflowing) set of coordinates layered on top of angus-bull.png.
-// That duplicate block has been removed so there is only one
-// source of truth for the diagram and its hover-zone coordinates.
-// ─────────────────────────────────────────────────────────────
+import BeefCutsHeroCentered from "../components/ui/BeefCutsHeroCentered";
 
 function useReveal() {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -50,21 +32,37 @@ export default function Home() {
   return (
     <div ref={ref} className="min-h-screen bg-[#fcfaf6] font-[var(--font-sans)] text-[#2c2623] overflow-x-hidden">
       <Navbar />
+      
+      {/* Navbar height spacer */}
       <div className="h-20" />
-      <ArrowRight className="fixed right-2 top-1/3 hidden lg:block float-slow z-50 text-[#e52d27]" />
-      <ArrowLeft className="fixed left-2 top-2/3 hidden lg:block float-mid z-50 text-[#e52d27]" />
+      
+      <ArrowRight className="fixed right-2 top-1/3 hidden lg:block float-slow z-40 text-[#e52d27]" />
+      <ArrowLeft className="fixed left-2 top-2/3 hidden lg:block float-mid z-40 text-[#e52d27]" />
 
       {/* ========================================= */}
-      {/* PRIME BEEF HERO SECTION (cow diagram)     */}
+      {/* PRESENTATION BANNER FOR OPTION 1          */}
       {/* ========================================= */}
+      <div className="w-full bg-[#2c2623] text-[#fcfaf6] text-center py-2 text-[10px] tracking-[0.3em] uppercase font-bold relative z-20">
+        Presentation: Hero Option 1 (Split Layout)
+      </div>
+
       <BeefCutsHero />
+
+      {/* ========================================= */}
+      {/* PRESENTATION BANNER FOR OPTION 2          */}
+      {/* ========================================= */}
+      <div className="w-full bg-[#e52d27] text-white text-center py-2 text-[10px] tracking-[0.3em] uppercase font-bold relative z-20">
+        Presentation: Hero Option 2 (Centered Layout)
+      </div>
+
+      <BeefCutsHeroCentered />
 
       {/* ========================================= */}
       {/* ORIGINAL HOMEPAGE CONTENT                 */}
       {/* ========================================= */}
 
       {/* ABOUT QUOTE */}
-      <section id="about" className="mx-auto max-w-5xl px-6 py-16">
+      <section id="about" className="mx-auto max-w-5xl px-6 py-20 relative z-10">
         <div className="flex flex-col md:flex-row items-center gap-10 reveal">
           <img src="/images/steak-small.jpg" alt="Steak" loading="lazy" className="h-48 w-48 object-cover rounded-sm shadow-lg hover-scale" />
           <div className="flex-1">
@@ -89,7 +87,7 @@ export default function Home() {
       </section>
 
       {/* MARQUEE */}
-      <div className="overflow-hidden border-y border-gray-200 bg-white py-4">
+      <div className="overflow-hidden border-y border-gray-200 bg-white py-4 relative z-10">
         <div className="marquee-track flex w-max gap-12 whitespace-nowrap font-[var(--font-display)] text-sm uppercase tracking-[0.4em] text-gray-400">
           {Array.from({ length: 2 }).map((_, k) => (
             <div key={k} className="flex gap-12">
@@ -102,7 +100,7 @@ export default function Home() {
       </div>
 
       {/* BLACK ANGUS */}
-      <section id="cuts" className="relative mx-auto max-w-5xl px-6 py-20">
+      <section id="cuts" className="relative mx-auto max-w-5xl px-6 py-20 z-10">
         <div className="absolute left-10 top-20 font-[var(--font-display)] text-[300px] leading-none font-bold text-gray-100 pointer-events-none select-none">
           A
         </div>
@@ -130,7 +128,7 @@ export default function Home() {
       </section>
 
       {/* MARBLING DARK BAND */}
-      <section className="relative bg-[#2c2623] text-white py-20">
+      <section className="relative bg-[#2c2623] text-white py-20 z-10">
         <div className="mx-auto max-w-5xl px-6 grid md:grid-cols-2 gap-12 items-center">
           <img src="/images/steak-board.jpg" alt="Marbling" loading="lazy" className="w-full object-cover shadow-2xl genie" />
           <div className="reveal">
@@ -146,7 +144,7 @@ export default function Home() {
       </section>
 
       {/* CORN FED */}
-      <section className="relative mx-auto max-w-5xl px-6 py-20">
+      <section className="relative mx-auto max-w-5xl px-6 py-20 z-10">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="relative genie">
             <img src="/images/corn.png" alt="Corn" loading="lazy" className="w-full object-contain mix-blend-multiply" />
@@ -166,7 +164,7 @@ export default function Home() {
       </section>
 
       {/* TRY IT */}
-      <section id="try" className="relative mx-auto max-w-5xl px-6 pb-20">
+      <section id="try" className="relative mx-auto max-w-5xl px-6 pb-20 z-10">
         <div className="relative flex items-stretch reveal">
           <img src="/images/steak-sliced.jpg" alt="Sliced steak" loading="lazy" className="w-1/2 object-cover" />
           <div className="flex-1 bg-[#2c2623] text-white px-10 py-10 flex items-center">
@@ -188,7 +186,7 @@ export default function Home() {
       </section>
 
       {/* CONTACTS */}
-      <section id="contacts" className="mx-auto max-w-5xl px-6 pb-16 text-center reveal">
+      <section id="contacts" className="mx-auto max-w-5xl px-6 pb-16 text-center reveal z-10 relative">
         <div className="flex justify-center gap-3 mb-4 text-gray-300">
           <span>✕</span><span>•</span><span>✕</span>
         </div>
@@ -217,7 +215,7 @@ export default function Home() {
       </section>
 
       {/* FOOTER */}
-      <footer className="border-t border-gray-200 py-5 bg-white">
+      <footer className="border-t border-gray-200 py-5 bg-white relative z-10">
         <div className="mx-auto max-w-5xl px-6 flex items-center justify-between text-[11px] text-gray-400 font-[var(--font-serif)] italic">
           <span>© ACC LLC, 2026</span>
           <div className="flex gap-3 text-gray-300">
@@ -267,8 +265,6 @@ function Navbar() {
       }
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 h-20">
-
-        {/* Logo matching Behance exactly */}
         <a href="#" className="group flex items-center gap-3">
           <div className="bg-[#e52d27] text-white font-bold p-2 text-xs tracking-wider">
             ACC
@@ -279,8 +275,8 @@ function Navbar() {
           </span>
         </a>
 
-        {/* Desktop links */}
-        <nav className="hidden md:flex items-center gap-9 text-[11px] uppercase tracking-[0.22em] text-gray-600 font-bold">
+        {/* Updated Menu Color to deep brand color #2c2623 */}
+        <nav className="hidden md:flex items-center gap-9 text-[11px] uppercase tracking-[0.22em] text-[#2c2623] font-bold">
           {links.map((l) => (
             <a key={l.href} href={l.href} className="hover:text-[#e52d27] transition-colors">
               {l.label}
@@ -288,18 +284,11 @@ function Navbar() {
           ))}
         </nav>
 
-        {/* CTA + lang */}
         <div className="flex items-center gap-4">
-          <span className="hidden sm:inline-flex items-center gap-1.5 border border-gray-200 px-3 py-1.5 text-[10px] font-bold tracking-widest text-gray-600 bg-white">
+          <span className="hidden sm:inline-flex items-center gap-1.5 border border-gray-200 px-3 py-1.5 text-[10px] font-bold tracking-widest text-[#2c2623] bg-white">
             <span className="h-1.5 w-1.5 rounded-full bg-[#e52d27]" /> EN
           </span>
-          <a
-            href="#try"
-            className="group relative hidden md:inline-flex items-center overflow-hidden border border-[#e52d27] px-6 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[#e52d27] bg-white"
-          >
-            <span className="absolute inset-0 -translate-x-full bg-[#e52d27] transition-transform duration-500 group-hover:translate-x-0" />
-            <span className="relative transition-colors group-hover:text-white">Order now</span>
-          </a>
+          {/* Order Now button completely removed here */}
           <button
             aria-label="Menu"
             onClick={() => setOpen((v) => !v)}
@@ -315,20 +304,19 @@ function Navbar() {
         </div>
       </div>
 
-      {/* Mobile menu */}
       <div
         className={
           "md:hidden overflow-hidden border-t border-gray-200 bg-white backdrop-blur transition-[max-height,opacity] duration-500 " +
           (open ? "max-h-80 opacity-100" : "max-h-0 opacity-0")
         }
       >
-        <nav className="mx-auto max-w-6xl px-6 py-4 flex flex-col gap-3 text-[12px] uppercase tracking-[0.22em] font-bold text-gray-600">
+        <nav className="mx-auto max-w-6xl px-6 py-4 flex flex-col gap-3 text-[12px] uppercase tracking-[0.22em] font-bold text-[#2c2623]">
           {links.map((l) => (
             <a key={l.href} href={l.href} onClick={() => setOpen(false)} className="py-2 hover:text-[#e52d27] transition-colors border-b border-gray-50">
               {l.label}
             </a>
           ))}
-          <a href="#try" onClick={() => setOpen(false)} className="mt-4 inline-flex w-full justify-center border border-[#e52d27] px-5 py-3 text-[#e52d27]">Order now</a>
+          {/* Order Now button completely removed from mobile menu here */}
         </nav>
       </div>
     </header>
