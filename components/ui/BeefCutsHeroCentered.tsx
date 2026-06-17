@@ -190,7 +190,7 @@ export default function BeefCutsHeroCentered() {
                   Retail Steaks
                 </span>
                 <h3 className="text-2xl md:text-3xl font-[var(--font-display)] font-light tracking-[0.15em] uppercase text-white">
-                  {activeCutDetails.title}
+                  {activeCutDetails?.title ?? "Retail Cuts"}
                 </h3>
               </div>
               
@@ -206,7 +206,7 @@ export default function BeefCutsHeroCentered() {
             
             {/* Retail Steaks Grid */}
             <div className="w-full overflow-x-auto pb-4 custom-scrollbar">
-              {activeCutDetails.items.length > 0 ? (
+              {activeCutDetails && activeCutDetails.items.length > 0 ? (
                 <div className="flex sm:grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-6 gap-y-10 min-w-max sm:min-w-0">
                   {activeCutDetails.items.map((item, idx) => (
                     <div key={idx} className="flex flex-col items-center text-center group w-28 sm:w-auto">
