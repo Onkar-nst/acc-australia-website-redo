@@ -33,24 +33,23 @@ export default function Home() {
     <div ref={ref} className="min-h-screen bg-[#fcfaf6] font-[var(--font-sans)] text-[#2c2623] overflow-x-hidden">
       <Navbar />
       
-      {/* Navbar height spacer */}
-      <div className="h-20" />
+
 
       {/* ========================================= */}
       {/* PRESENTATION BANNER FOR OPTION 1          */}
       {/* ========================================= */}
-      <div className="w-full bg-[#2c2623] text-[#fcfaf6] text-center py-2 text-[10px] tracking-[0.3em] uppercase font-bold relative z-20">
+      {/* <div className="w-full bg-[#2c2623] text-[#fcfaf6] text-center py-2 text-[10px] tracking-[0.3em] uppercase font-bold relative z-20">
         Presentation: Hero Option 1 (Split Layout)
-      </div>
+      </div> */}
 
-      <BeefCutsHero />
+      {/* <BeefCutsHero /> */}
 
       {/* ========================================= */}
       {/* PRESENTATION BANNER FOR OPTION 2          */}
       {/* ========================================= */}
-      <div className="w-full bg-[#e52d27] text-white text-center py-2 text-[10px] tracking-[0.3em] uppercase font-bold relative z-20">
+      {/* <div className="w-full bg-[#e52d27] text-white text-center py-2 text-[10px] tracking-[0.3em] uppercase font-bold relative z-20">
         Presentation: Hero Option 2 (Centered Layout)
-      </div>
+      </div> */}
 
       <BeefCutsHeroCentered />
 
@@ -420,13 +419,13 @@ function Navbar() {
       className={
         "fixed inset-x-0 top-0 z-50 transition-all duration-500 " +
         (scrolled
-          ? "bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm"
-          : "bg-[#fcfaf6] border-b border-transparent")
+          ? "bg-[#fcfaf6]/90 backdrop-blur-md"
+          : "bg-transparent")
       }
     >
-      <div className="mx-auto grid grid-cols-[1fr_auto_1fr] items-center px-6 h-20 max-w-7xl gap-4">
+      <div className="mx-auto grid grid-cols-[1fr_auto_1fr] items-center px-6 h-24 max-w-7xl gap-4">
         {/* LEFT NAV */}
-        <nav className="hidden md:flex items-center justify-end gap-8 text-[11px] uppercase tracking-[0.22em] text-[#2c2623] font-bold">
+        <nav className="hidden md:flex items-center justify-end gap-8 text-[11px] uppercase tracking-[0.22em] text-[#2c2623] font-bold border-b border-gray-200/80 pb-2">
           {leftLinks.map((l) => (
             <a key={l.href} href={l.href} className="hover:text-[#e52d27] transition-colors whitespace-nowrap">
               {l.label}
@@ -436,7 +435,10 @@ function Navbar() {
 
         {/* CENTER LOGO */}
         <a href="#" className="group flex flex-col items-center leading-none md:px-6">
-          <span className="font-[var(--font-display)] text-2xl font-bold tracking-[0.4em] text-[#2c2623] pl-[0.4em]">
+          <div className="mb-1 w-6 h-6 border border-[#2c2623] rounded-sm flex items-center justify-center transform rotate-45 bg-[#2c2623] text-white">
+            <span className="text-[7px] font-sans font-bold -rotate-45 leading-none">ACC</span>
+          </div>
+          <span className="font-[var(--font-display)] text-2xl font-bold tracking-[0.4em] text-[#2c2623] pl-[0.4em] mt-1">
             A C C
           </span>
           <span className="font-[var(--font-serif)] italic text-[10px] text-gray-500 mt-1 tracking-wide">
@@ -445,7 +447,7 @@ function Navbar() {
         </a>
 
         {/* RIGHT NAV */}
-        <nav className="hidden md:flex items-center justify-start gap-8 text-[11px] uppercase tracking-[0.22em] text-[#2c2623] font-bold">
+        <nav className="hidden md:flex items-center justify-start gap-8 text-[11px] uppercase tracking-[0.22em] text-[#2c2623] font-bold border-b border-gray-200/80 pb-2">
           {rightLinks.map((l) => (
             <a key={l.href} href={l.href} className="hover:text-[#e52d27] transition-colors whitespace-nowrap">
               {l.label}

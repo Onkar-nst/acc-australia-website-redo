@@ -1,8 +1,10 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { X } from "lucide-react";
 
-// Retail cuts that appear when a primal cut is clicked
+/* ------------------------------------------------------------------ */
+/*  Data                                                               */
+/* ------------------------------------------------------------------ */
 const CUTS_DETAILS: Record<string, { title: string; items: { name: string; sub: string; img: string }[] }> = {
   chuck: {
     title: "CHUCK CUTS",
@@ -72,8 +74,14 @@ const CUTS_DETAILS: Record<string, { title: string; items: { name: string; sub: 
   },
 };
 
+/* ------------------------------------------------------------------ */
+/*  Component                                                          */
+/* ------------------------------------------------------------------ */
 export default function BeefCutsHeroCentered() {
   const [selectedCut, setSelectedCut] = useState<string | null>(null);
+  const [showPanel, setShowPanel] = useState(false);
+  const detailsRef = useRef<HTMLDivElement | null>(null);
+  const sectionRef = useRef<HTMLElement | null>(null);
 
   const activeCutDetails = selectedCut
     ? CUTS_DETAILS[selectedCut] || {
@@ -85,193 +93,290 @@ export default function BeefCutsHeroCentered() {
       }
     : null;
 
-  // Solid red fill with white borders to match the Behance reference exactly
-  const getPathClass = (id: string) => {
-    return selectedCut === id
-      ? "fill-[#e52d27]/90 stroke-white stroke-[2] cursor-pointer transition-all duration-300"
-      : "fill-transparent stroke-white hover:fill-[#e52d27]/70 hover:stroke-white hover:stroke-[2] cursor-pointer transition-all duration-300";
-  };
+  // Animate in panel & scroll to it
+  useEffect(() => {
+    if (selectedCut) {
+      setShowPanel(true);
+      const t = setTimeout(() => {
+        detailsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 150);
+      return () => clearTimeout(t);
+    } else {
+      setShowPanel(false);
+    }
+  }, [selectedCut]);
 
-  const handleCutClick = (id: string) => {
-    setSelectedCut(selectedCut === id ? null : id);
-  };
+  // Intersection observer for genie reveal
+  useEffect(() => {
+    const root = sectionRef.current;
+    if (!root) return;
+    const targets = root.querySelectorAll<HTMLElement>(".reveal, .genie");
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add("in-view");
+            io.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.12 },
+    );
+    targets.forEach((t) => io.observe(t));
+    return () => io.disconnect();
+  }, []);
+
+  const getPathClass = (id: string) =>
+    selectedCut === id
+      ? "fill-[#e52d27]/90 stroke-white stroke-[2] cursor-pointer transition-all duration-300"
+      : "fill-transparent stroke-white/70 hover:fill-[#e52d27]/60 hover:stroke-white hover:stroke-[2] cursor-pointer transition-all duration-300";
+
+  const handleCutClick = useCallback(
+    (id: string) => setSelectedCut((prev) => (prev === id ? null : id)),
+    [],
+  );
 
   return (
-    <section className="w-full relative bg-[#fcfaf6] text-[#2c2623] font-sans antialiased selection:bg-red-200 min-h-screen flex flex-col justify-center pt-24 pb-20 overflow-hidden">
+    <section
+      ref={sectionRef}
+      className="w-full relative bg-[#fcfaf6] text-[#2c2623] font-sans antialiased selection:bg-red-200 flex flex-col items-center overflow-hidden"
+    >
+      {/* ─── Top Spacer for Fixed Navbar ─── */}
+      <div className="h-28 lg:h-32 w-full" />
 
-      {/* ============================================================ */}
-      {/* TITLE                                                        */}
-      {/* ============================================================ */}
-      <div className="max-w-6xl mx-auto px-6 w-full flex flex-col items-center text-center z-20">
-        <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.45em] text-[#b9ad9c] mb-5">
+      {/* ─── Title Block ─── */}
+      <div className="reveal max-w-5xl mx-auto px-6 w-full flex flex-col items-center text-center z-20 mb-10 lg:mb-14">
+        <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.5em] text-[#b9ad9c] mb-5">
           Aberdeen Angus
         </span>
-        <h1 className="font-[var(--font-display)] font-bold uppercase text-[#2c2623] leading-none tracking-[0.18em] text-[clamp(2.5rem,7vw,5rem)]">
+        <h1 className="font-[var(--font-display)] font-light uppercase text-[#2c2623] leading-none tracking-[0.25em] text-[clamp(2rem,5.5vw,4rem)]">
           The Cuts
         </h1>
       </div>
 
-      {/* ============================================================ */}
-      {/* STAGE: ellipse + decorations + cow diagram                   */}
-      {/* ============================================================ */}
-      <div className="relative w-full max-w-5xl mx-auto flex items-center justify-center mt-6 lg:mt-2 z-10">
-
-        {/* Tall, soft ellipse behind the bull (the reference "egg") */}
-        <div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 rounded-[50%] bg-[#f3efe8]
-                     w-[300px] h-[400px] sm:w-[420px] sm:h-[560px] lg:w-[480px] lg:h-[640px]"
-        />
-
-        {/* Cleaver — top right, angled (decorative) */}
+      {/* ─── Main Stage ─── */}
+      <div className="relative w-full max-w-7xl mx-auto px-6 z-10">
+        {/* Decorative cleaver — far top-right */}
         <img
           src="/images/cleaver.png"
           alt=""
           aria-hidden="true"
-          className="hidden md:block absolute right-2 lg:right-10 top-2 w-20 lg:w-28 object-contain rotate-[18deg] opacity-90 select-none pointer-events-none drop-shadow-sm"
+          className="hidden lg:block absolute right-8 -top-8 w-36 object-contain rotate-[18deg] opacity-80 select-none pointer-events-none drop-shadow-md z-30 reveal"
           draggable={false}
         />
 
-        {/* Left tags — alternative whole-cut products */}
-        <div className="hidden md:flex absolute left-2 lg:left-8 top-[42%] flex-col gap-2 z-20">
-          {["Mince", "Minute Steak"].map((t) => (
-            <span
-              key={t}
-              className="bg-[#bdb4a8] text-white text-[10px] lg:text-[11px] font-bold uppercase tracking-[0.18em] px-4 py-2 shadow-sm whitespace-nowrap"
+        {/* 3-Column Grid */}
+        <div className="grid md:grid-cols-[140px_1fr_220px] lg:grid-cols-[170px_1fr_260px] items-center gap-4 lg:gap-10">
+
+          {/* ── Left Column ── */}
+          <div className="hidden md:flex flex-col items-start gap-10 reveal">
+            <div className="flex flex-col gap-3">
+              {["Mince", "Minute Steak"].map((t) => (
+                <span
+                  key={t}
+                  className="bg-[#635c54] text-white text-[10px] font-bold uppercase tracking-[0.2em] px-5 py-2.5 whitespace-nowrap transition-transform duration-300 hover:-translate-x-1"
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+            <svg
+              className="w-10 h-20 text-[#e52d27] ml-2"
+              viewBox="0 0 50 100"
+              fill="none"
+              aria-hidden="true"
             >
-              {t}
-            </span>
-          ))}
-        </div>
-
-        {/* Bottom-left red chevron (decorative pointer) */}
-        <svg
-          className="hidden md:block absolute left-4 lg:left-12 bottom-6 w-12 lg:w-16 text-[#e52d27]"
-          viewBox="0 0 60 120"
-          fill="none"
-          aria-hidden="true"
-        >
-          <path d="M55 6 L8 60 L55 114" stroke="currentColor" strokeWidth="3" strokeLinecap="square" />
-        </svg>
-
-        {/* Bottom-right wavy line + prompt (hidden once a cut is picked) */}
-        {!selectedCut && (
-          <div className="hidden md:flex absolute right-2 lg:right-8 bottom-8 flex-col items-end text-right animate-in fade-in duration-500 z-20">
-            <svg width="120" height="12" viewBox="0 0 120 12" className="text-[#e52d27] mb-3">
-              <path
-                d="M0 6 Q 7.5 0, 15 6 T 30 6 T 45 6 T 60 6 T 75 6 T 90 6 T 105 6 T 120 6"
-                stroke="currentColor"
-                strokeWidth="2"
-                fill="none"
-              />
+              <path d="M38 10 L12 50 L38 90" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            <p className="font-[var(--font-serif)] italic text-base lg:text-lg text-[#2c2623]/80 leading-snug">
-              Select a part<br />of the carcass
-            </p>
           </div>
-        )}
 
-        {/* The cow diagram — kept exactly as-is (center main object) */}
-        <div className="relative w-full max-w-3xl aspect-[1017/619] z-10 px-4">
-          <img
-            src="/images/2.png"
-            alt="Beef primal cuts diagram"
-            className="absolute inset-0 w-full h-full object-contain mix-blend-multiply select-none pointer-events-none"
-            draggable={false}
-          />
+          {/* ── Center Column: Diagram ── */}
+          <div className="relative w-full flex items-center justify-center genie">
+            {/* Vertical oval backdrop — starts from the cow body */}
+            <div
+              className="absolute left-1/2 top-1/2 -translate-x-[52%] -translate-y-[48%] -z-10 rounded-[50%] bg-[#f0ebe3]
+                         w-[280px] h-[380px] sm:w-[380px] sm:h-[520px] lg:w-[460px] lg:h-[600px]"
+              style={{ transition: "all 0.6s cubic-bezier(.4,0,.2,1)" }}
+            />
 
-          {/* SVG overlay — hand-traced polygons */}
-          <svg
-            viewBox="0 0 1017 619"
-            className="absolute inset-0 w-full h-full z-20"
-            preserveAspectRatio="xMidYMid meet"
-          >
-            <polygon points="264,68,266,81,265,94,263,112,259,131,254,149,247,169,239,182,227,196,217,206,200,216,209,228,217,242,224,259,230,276,234,286,259,281,281,276,307,271,327,268,346,266,363,265,383,265,393,265,391,241,390,221,390,205,389,183,389,162,387,141,384,123,383,108,383,98,381,88" className={getPathClass("chuck")} onClick={() => handleCutClick("chuck")} />
-            <polygon points="386,86,389,107,392,127,393,149,393,170,393,191,395,213,395,233,398,254,396,263,421,263,439,263,460,261,477,261,494,261,506,261,505,239,502,210,499,181,496,158,492,140,489,123,485,106,479,91" className={getPathClass("rib")} onClick={() => handleCutClick("rib")} />
-            <polygon points="484,90,487,100,493,114,496,130,499,145,501,161,504,178,506,197,507,218,509,233,510,248,511,263,528,264,547,265,567,265,586,265,603,267,606,247,604,223,603,201,600,180,597,160,593,137,587,112,577,90" className={getPathClass("short_loin")} onClick={() => handleCutClick("short_loin")} />
-            <polygon points="581,89,590,106,596,129,601,154,606,177,608,197,608,212,610,232,608,252,607,266,631,269,658,273,676,277,693,289,708,302,716,309,721,286,721,266,721,247,720,230,718,210,717,193,717,174,714,156,711,136,708,120,703,103,690,81" className={getPathClass("sirloin")} onClick={() => handleCutClick("sirloin")} />
-            <polygon points="696,79,706,97,714,122,717,146,721,173,723,194,726,223,726,256,726,283,723,312,748,312,774,316,800,322,820,323,830,296,838,269,843,250,857,239,857,204,853,179,846,156,837,133,826,113,816,94,806,81,778,76" className={getPathClass("round")} onClick={() => handleCutClick("round")} />
-            <polygon points="237,293,266,284,297,279,327,274,359,272,393,270,396,302,396,339,394,353,333,359,313,366,287,360,269,347" className={getPathClass("brisket")} onClick={() => handleCutClick("brisket")} />
-            <polygon points="399,267,399,289,401,306,403,325,400,345,396,352,421,356,441,350,457,349,476,349,490,349,510,353,526,353,541,353,561,350,584,346,593,325,597,309,600,294,603,272" className={getPathClass("plate")} onClick={() => handleCutClick("plate")} />
-            <polygon points="590,346,598,325,604,303,607,282,606,269,634,270,653,273,668,277,681,286,691,293,701,300,711,312" className={getPathClass("flank")} onClick={() => handleCutClick("flank")} />
-            <polygon points="320,368,329,381,334,395,339,406,344,419,356,421,369,406,377,394,383,381,390,366,394,359,354,359" className={getPathClass("shank")} onClick={() => handleCutClick("shank")} />
-            <polygon points="708,319,730,332,747,346,761,356,777,366,790,372,807,376,816,362,814,347,813,327,754,315" className={getPathClass("shank")} onClick={() => handleCutClick("shank")} />
-          </svg>
+            {/* Cow diagram */}
+            <div className="relative w-full max-w-[600px] aspect-[1017/619] z-10">
+              <img
+                src="/images/2.png"
+                alt="Beef primal cuts diagram"
+                className="absolute inset-0 w-full h-full object-contain mix-blend-multiply select-none pointer-events-none"
+                draggable={false}
+              />
+              <svg
+                viewBox="0 0 1017 619"
+                className="absolute inset-0 w-full h-full z-20"
+                preserveAspectRatio="xMidYMid meet"
+              >
+                <polygon points="264,68,266,81,265,94,263,112,259,131,254,149,247,169,239,182,227,196,217,206,200,216,209,228,217,242,224,259,230,276,234,286,259,281,281,276,307,271,327,268,346,266,363,265,383,265,393,265,391,241,390,221,390,205,389,183,389,162,387,141,384,123,383,108,383,98,381,88" className={getPathClass("chuck")} onClick={() => handleCutClick("chuck")} />
+                <polygon points="386,86,389,107,392,127,393,149,393,170,393,191,395,213,395,233,398,254,396,263,421,263,439,263,460,261,477,261,494,261,506,261,505,239,502,210,499,181,496,158,492,140,489,123,485,106,479,91" className={getPathClass("rib")} onClick={() => handleCutClick("rib")} />
+                <polygon points="484,90,487,100,493,114,496,130,499,145,501,161,504,178,506,197,507,218,509,233,510,248,511,263,528,264,547,265,567,265,586,265,603,267,606,247,604,223,603,201,600,180,597,160,593,137,587,112,577,90" className={getPathClass("short_loin")} onClick={() => handleCutClick("short_loin")} />
+                <polygon points="581,89,590,106,596,129,601,154,606,177,608,197,608,212,610,232,608,252,607,266,631,269,658,273,676,277,693,289,708,302,716,309,721,286,721,266,721,247,720,230,718,210,717,193,717,174,714,156,711,136,708,120,703,103,690,81" className={getPathClass("sirloin")} onClick={() => handleCutClick("sirloin")} />
+                <polygon points="696,79,706,97,714,122,717,146,721,173,723,194,726,223,726,256,726,283,723,312,748,312,774,316,800,322,820,323,830,296,838,269,843,250,857,239,857,204,853,179,846,156,837,133,826,113,816,94,806,81,778,76" className={getPathClass("round")} onClick={() => handleCutClick("round")} />
+                <polygon points="237,293,266,284,297,279,327,274,359,272,393,270,396,302,396,339,394,353,333,359,313,366,287,360,269,347" className={getPathClass("brisket")} onClick={() => handleCutClick("brisket")} />
+                <polygon points="399,267,399,289,401,306,403,325,400,345,396,352,421,356,441,350,457,349,476,349,490,349,510,353,526,353,541,353,561,350,584,346,593,325,597,309,600,294,603,272" className={getPathClass("plate")} onClick={() => handleCutClick("plate")} />
+                <polygon points="590,346,598,325,604,303,607,282,606,269,634,270,653,273,668,277,681,286,691,293,701,300,711,312" className={getPathClass("flank")} onClick={() => handleCutClick("flank")} />
+                <polygon points="320,368,329,381,334,395,339,406,344,419,356,421,369,406,377,394,383,381,390,366,394,359,354,359" className={getPathClass("shank")} onClick={() => handleCutClick("shank")} />
+                <polygon points="708,319,730,332,747,346,761,356,777,366,790,372,807,376,816,362,814,347,813,327,754,315" className={getPathClass("shank")} onClick={() => handleCutClick("shank")} />
+              </svg>
+            </div>
+          </div>
+
+          {/* ── Right Column ── */}
+          <div className="hidden md:flex flex-col justify-center items-start max-w-[260px] reveal">
+            {!selectedCut ? (
+              <div className="relative pl-2">
+                {/* Hand-drawn curly arrow */}
+                <svg
+                  width="100"
+                  height="70"
+                  viewBox="0 0 120 80"
+                  fill="none"
+                  className="text-[#e52d27] mb-5 select-none pointer-events-none"
+                >
+                  <path
+                    d="M110 12 C 100 4, 90 6, 84 16 C 76 30, 78 52, 66 52 C 54 52, 52 30, 62 22 C 72 14, 76 32, 66 44 C 56 56, 36 56, 18 52"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    fill="none"
+                  />
+                  <path
+                    d="M28 44 L14 52 L26 60"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    fill="none"
+                  />
+                  {/* Cross-hatch inside arrowhead */}
+                  <line x1="22" y1="49" x2="18" y2="52" stroke="currentColor" strokeWidth="1.2" />
+                  <line x1="24" y1="52" x2="20" y2="55" stroke="currentColor" strokeWidth="1.2" />
+                  <line x1="22" y1="55" x2="18" y2="52" stroke="currentColor" strokeWidth="1.2" />
+                </svg>
+
+                {/* Wavy accent line */}
+                <svg width="50" height="8" viewBox="0 0 50 8" className="text-[#e52d27] mb-4">
+                  <path d="M0 4 Q 6 0, 12 4 T 24 4 T 36 4 T 50 4" stroke="currentColor" strokeWidth="2" fill="none" />
+                </svg>
+
+                <p className="font-[var(--font-serif)] italic text-[13px] lg:text-[15px] text-[#2c2623]/75 leading-relaxed">
+                  <strong className="not-italic text-[#e52d27] font-sans font-bold uppercase tracking-[0.2em] text-[10px] block mb-2">
+                    Select a primal cut
+                  </strong>
+                  from the diagram to explore its retail steaks. From robust chuck to tender short loin, discover the anatomy of premium flavor.
+                </p>
+              </div>
+            ) : (
+              <div className="pl-2">
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#b9ad9c] block mb-1">
+                  Selected
+                </span>
+                <span className="text-lg font-[var(--font-display)] font-bold uppercase tracking-[0.15em] text-[#e52d27]">
+                  {activeCutDetails?.title}
+                </span>
+                <p className="font-[var(--font-serif)] italic text-xs text-[#2c2623]/60 mt-2 leading-relaxed">
+                  Scroll down to view the retail steaks available from this primal cut.
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Mobile prompt (decorations are hidden on small screens) */}
+      {/* ─── Mobile Prompt ─── */}
       {!selectedCut && (
-        <div className="md:hidden flex flex-col items-center text-center mt-2 px-6">
-          <svg width="80" height="12" viewBox="0 0 80 12" className="text-[#e52d27] mb-3">
-            <path d="M0 6 Q 5 0, 10 6 T 20 6 T 30 6 T 40 6 T 50 6 T 60 6 T 70 6 T 80 6" stroke="currentColor" strokeWidth="2" fill="none" />
+        <div className="md:hidden flex flex-col items-center text-center mt-6 px-6 mb-8">
+          <svg width="50" height="8" viewBox="0 0 50 8" className="text-[#e52d27] mb-4">
+            <path d="M0 4 Q 6 0, 12 4 T 24 4 T 36 4 T 50 4" stroke="currentColor" strokeWidth="2" fill="none" />
           </svg>
-          <p className="font-[var(--font-serif)] italic text-base text-[#2c2623]/80">
-            Tap a part of the carcass to explore its cuts
+          <p className="font-[var(--font-serif)] italic text-sm text-[#2c2623]/75 leading-relaxed max-w-xs">
+            <strong className="not-italic text-[#e52d27] font-sans font-bold uppercase tracking-[0.2em] text-[10px] block mb-1.5">
+              Select a primal cut
+            </strong>
+            from the diagram to explore its retail steaks.
           </p>
         </div>
       )}
 
-      {/* ============================================================ */}
-      {/* SELECTED STATE: Dark Product Panel                           */}
-      {/* ============================================================ */}
-      {selectedCut && activeCutDetails && (
-        <div className="w-full max-w-6xl mx-auto px-6 mt-10 animate-in slide-in-from-bottom-8 fade-in duration-500 z-30">
-          <div className="w-full bg-[#1c1a19] text-white p-8 sm:p-10 shadow-2xl rounded-md">
-
-            {/* Header of the Details Panel */}
-            <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 border-b border-neutral-800 pb-6 mb-8">
-              <div className="flex flex-col">
-                <span className="text-[#e52d27] text-[11px] font-bold tracking-[0.2em] uppercase mb-2">
-                  Retail Steaks
-                </span>
-                <h3 className="text-2xl md:text-3xl font-[var(--font-display)] font-light tracking-[0.15em] uppercase text-white">
-                  {activeCutDetails.title}
-                </h3>
+      {/* ─── Retail Steaks Panel ─── */}
+      <div
+        ref={detailsRef}
+        className="w-full scroll-mt-28"
+        style={{
+          maxHeight: showPanel ? "1200px" : "0px",
+          opacity: showPanel ? 1 : 0,
+          transform: showPanel ? "scaleY(1) translateY(0)" : "scaleY(0.02) translateY(40%)",
+          transformOrigin: "top center",
+          transition: "max-height 0.6s cubic-bezier(.4,0,.2,1), opacity 0.5s ease, transform 0.6s cubic-bezier(.2,.8,.2,1)",
+          overflow: "hidden",
+        }}
+      >
+        {activeCutDetails && (
+          <div className="max-w-6xl mx-auto px-6 pt-16 pb-20">
+            <div className="w-full bg-[#1c1a19] text-white p-8 sm:p-10 lg:p-12 shadow-2xl rounded-lg">
+              {/* Panel Header */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-6 mb-8">
+                <div>
+                  <span className="text-[#e52d27] text-[10px] font-bold tracking-[0.25em] uppercase block mb-1.5">
+                    Retail Steaks
+                  </span>
+                  <h3 className="text-xl sm:text-2xl md:text-3xl font-[var(--font-display)] font-light tracking-[0.18em] uppercase text-white">
+                    {activeCutDetails.title}
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setSelectedCut(null)}
+                  className="group flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-500 hover:text-white transition-colors duration-300 shrink-0"
+                  aria-label="Close details"
+                >
+                  <span>Close</span>
+                  <X className="w-5 h-5 border border-neutral-700 rounded-full p-0.5 group-hover:border-[#e52d27] group-hover:text-[#e52d27] transition-all duration-300" />
+                </button>
               </div>
 
-              <button
-                onClick={() => setSelectedCut(null)}
-                className="group flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-400 hover:text-white transition-colors"
-                aria-label="Close details"
-              >
-                <span>Close Menu</span>
-                <X className="w-5 h-5 border border-neutral-700 rounded-full p-0.5 group-hover:border-white transition-colors" />
-              </button>
-            </div>
-
-            {/* Retail Steaks Grid */}
-            <div className="w-full overflow-x-auto pb-4 custom-scrollbar">
-              {activeCutDetails.items.length > 0 ? (
+              {/* Steaks Grid */}
+              <div className="w-full overflow-x-auto pb-2 custom-scrollbar">
                 <div className="flex sm:grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-6 gap-y-10 min-w-max sm:min-w-0">
                   {activeCutDetails.items.map((item, idx) => (
-                    <div key={idx} className="flex flex-col items-center text-center group w-28 sm:w-auto">
-                      <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-full overflow-hidden bg-neutral-800 mb-4 shadow-inner border border-neutral-700 group-hover:border-[#e52d27] transition-all duration-300">
+                    <div
+                      key={idx}
+                      className="flex flex-col items-center text-center group w-28 sm:w-auto"
+                      style={{
+                        opacity: showPanel ? 1 : 0,
+                        transform: showPanel ? "translateY(0)" : "translateY(20px)",
+                        transition: `opacity 0.5s ease ${idx * 0.08}s, transform 0.5s ease ${idx * 0.08}s`,
+                      }}
+                    >
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-neutral-800 mb-3 border-2 border-neutral-700/50 group-hover:border-[#e52d27] transition-all duration-500 shadow-lg">
                         <img
                           src={item.img}
                           alt={item.name}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                           onError={(e) => { e.currentTarget.style.display = "none"; }}
                         />
                       </div>
-                      <span className="text-[10px] sm:text-xs font-bold tracking-widest text-neutral-200 uppercase line-clamp-2">
+                      <span className="text-[10px] sm:text-[11px] font-bold tracking-[0.15em] text-neutral-200 uppercase line-clamp-2">
                         {item.name}
                       </span>
-                      <span className="text-[9px] sm:text-[11px] text-neutral-500 mt-1 font-[var(--font-serif)] italic">
+                      <span className="text-[9px] sm:text-[10px] text-neutral-500 mt-0.5 font-[var(--font-serif)] italic">
                         {item.sub}
                       </span>
                     </div>
                   ))}
                 </div>
-              ) : (
-                <div className="text-center text-neutral-500 py-8 font-[var(--font-serif)] italic text-sm border border-dashed border-neutral-800 rounded-lg">
-                  Specific retail cuts coming soon...
-                </div>
-              )}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
+      {/* Bottom spacer when no panel is shown */}
+      {!selectedCut && <div className="h-16 lg:h-24" />}
     </section>
   );
 }
