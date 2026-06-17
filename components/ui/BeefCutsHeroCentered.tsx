@@ -97,47 +97,85 @@ export default function BeefCutsHeroCentered() {
   };
 
   return (
-    <section className="w-full relative bg-[#fcfaf6] text-[#2c2623] font-sans antialiased selection:bg-red-200 min-h-screen flex flex-col justify-center pt-24 pb-16">
-      
+    <section className="w-full relative bg-[#fcfaf6] text-[#2c2623] font-sans antialiased selection:bg-red-200 min-h-screen flex flex-col justify-center pt-24 pb-20 overflow-hidden">
+
       {/* ============================================================ */}
-      {/* TOP SECTION: Centered Text & Typography                      */}
+      {/* TITLE                                                        */}
       {/* ============================================================ */}
-      <div className="max-w-6xl mx-auto px-6 w-full flex flex-col items-center text-center space-y-6 z-20">
-        
-        {/* Capsules */}
-        <div className="flex items-center gap-3 flex-wrap justify-center">
-          {["People", "Passion", "Flavour"].map((word, idx) => (
-            <span 
-              key={idx} 
-              className="px-4 py-1.5 rounded-full border border-[#2c2623]/20 text-[#2c2623] text-[11px] font-bold uppercase tracking-widest bg-white"
-            >
-              {word}
-            </span>
-          ))}
-        </div>
-        
-        {/* Headline - Guaranteed single line using clamp and whitespace-nowrap */}
-        <div className="w-full overflow-hidden flex justify-center">
-          <h1 className="text-[clamp(1.2rem,4vw,4.5rem)] font-[var(--font-display)] font-bold tracking-tight text-[#2c2623] leading-none whitespace-nowrap">
-            A global leader in beef production.
-          </h1>
-        </div>
+      <div className="max-w-6xl mx-auto px-6 w-full flex flex-col items-center text-center z-20">
+        <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.45em] text-[#b9ad9c] mb-5">
+          Aberdeen Angus
+        </span>
+        <h1 className="font-[var(--font-display)] font-bold uppercase text-[#2c2623] leading-none tracking-[0.18em] text-[clamp(2.5rem,7vw,5rem)]">
+          The Cuts
+        </h1>
       </div>
 
       {/* ============================================================ */}
-      {/* MIDDLE SECTION: Centered Cow with Circle Watermark           */}
+      {/* STAGE: ellipse + decorations + cow diagram                   */}
       {/* ============================================================ */}
-      <div className="relative w-full max-w-6xl mx-auto flex flex-col items-center justify-center mt-12 lg:mt-16 z-10">
-        
-        {/* Subtle Background Circle to anchor the image */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[55%] w-[300px] h-[300px] sm:w-[450px] sm:h-[450px] lg:w-[600px] lg:h-[600px] bg-[#f2eee6] rounded-full -z-10"></div>
+      <div className="relative w-full max-w-5xl mx-auto flex items-center justify-center mt-6 lg:mt-2 z-10">
 
-        {/* The cow diagram */}
-        <div className="relative w-full max-w-3xl lg:max-w-4xl aspect-[1017/619] z-10 px-4">
+        {/* Tall, soft ellipse behind the bull (the reference "egg") */}
+        <div
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 rounded-[50%] bg-[#f3efe8]
+                     w-[300px] h-[400px] sm:w-[420px] sm:h-[560px] lg:w-[480px] lg:h-[640px]"
+        />
+
+        {/* Cleaver — top right, angled (decorative) */}
+        <img
+          src="/images/cleaver.png"
+          alt=""
+          aria-hidden="true"
+          className="hidden md:block absolute right-2 lg:right-10 top-2 w-20 lg:w-28 object-contain rotate-[18deg] opacity-90 select-none pointer-events-none drop-shadow-sm"
+          draggable={false}
+        />
+
+        {/* Left tags — alternative whole-cut products */}
+        <div className="hidden md:flex absolute left-2 lg:left-8 top-[42%] flex-col gap-2 z-20">
+          {["Mince", "Minute Steak"].map((t) => (
+            <span
+              key={t}
+              className="bg-[#bdb4a8] text-white text-[10px] lg:text-[11px] font-bold uppercase tracking-[0.18em] px-4 py-2 shadow-sm whitespace-nowrap"
+            >
+              {t}
+            </span>
+          ))}
+        </div>
+
+        {/* Bottom-left red chevron (decorative pointer) */}
+        <svg
+          className="hidden md:block absolute left-4 lg:left-12 bottom-6 w-12 lg:w-16 text-[#e52d27]"
+          viewBox="0 0 60 120"
+          fill="none"
+          aria-hidden="true"
+        >
+          <path d="M55 6 L8 60 L55 114" stroke="currentColor" strokeWidth="3" strokeLinecap="square" />
+        </svg>
+
+        {/* Bottom-right wavy line + prompt (hidden once a cut is picked) */}
+        {!selectedCut && (
+          <div className="hidden md:flex absolute right-2 lg:right-8 bottom-8 flex-col items-end text-right animate-in fade-in duration-500 z-20">
+            <svg width="120" height="12" viewBox="0 0 120 12" className="text-[#e52d27] mb-3">
+              <path
+                d="M0 6 Q 7.5 0, 15 6 T 30 6 T 45 6 T 60 6 T 75 6 T 90 6 T 105 6 T 120 6"
+                stroke="currentColor"
+                strokeWidth="2"
+                fill="none"
+              />
+            </svg>
+            <p className="font-[var(--font-serif)] italic text-base lg:text-lg text-[#2c2623]/80 leading-snug">
+              Select a part<br />of the carcass
+            </p>
+          </div>
+        )}
+
+        {/* The cow diagram — kept exactly as-is (center main object) */}
+        <div className="relative w-full max-w-3xl aspect-[1017/619] z-10 px-4">
           <img
             src="/images/2.png"
             alt="Beef primal cuts diagram"
-            className="absolute inset-0 w-full h-full object-contain mix-blend-multiply select-none pointer-events-none drop-shadow-lg"
+            className="absolute inset-0 w-full h-full object-contain mix-blend-multiply select-none pointer-events-none"
             draggable={false}
           />
 
@@ -161,28 +199,25 @@ export default function BeefCutsHeroCentered() {
         </div>
       </div>
 
+      {/* Mobile prompt (decorations are hidden on small screens) */}
+      {!selectedCut && (
+        <div className="md:hidden flex flex-col items-center text-center mt-2 px-6">
+          <svg width="80" height="12" viewBox="0 0 80 12" className="text-[#e52d27] mb-3">
+            <path d="M0 6 Q 5 0, 10 6 T 20 6 T 30 6 T 40 6 T 50 6 T 60 6 T 70 6 T 80 6" stroke="currentColor" strokeWidth="2" fill="none" />
+          </svg>
+          <p className="font-[var(--font-serif)] italic text-base text-[#2c2623]/80">
+            Tap a part of the carcass to explore its cuts
+          </p>
+        </div>
+      )}
+
       {/* ============================================================ */}
-      {/* BOTTOM SECTION: Instructions or Active Dark Panel            */}
+      {/* SELECTED STATE: Dark Product Panel                           */}
       {/* ============================================================ */}
-      <div className="relative w-full max-w-7xl mx-auto px-6 flex flex-col items-center justify-center min-h-[220px]">
-        
-        {/* Unselected State: Instructional Text */}
-        {!selectedCut ? (
-          <div className="flex flex-col items-center text-center animate-in fade-in duration-500 max-w-lg mt-4">
-            <svg width="40" height="12" viewBox="0 0 40 12" className="text-[#e52d27] mb-4">
-              <path d="M0 6 Q 5 0, 10 6 T 20 6 T 30 6 T 40 6" stroke="currentColor" strokeWidth="1.5" fill="none" />
-            </svg>
-            <p className="text-sm sm:text-base text-[#8a8077] font-[var(--font-serif)] italic leading-relaxed mb-6">
-              <strong className="not-italic text-[#e52d27] font-sans font-bold uppercase tracking-widest text-[11px] block sm:inline sm:mr-1">
-                Select a primal cut
-              </strong> 
-              from the diagram to explore its retail steaks. From robust chuck to tender short loin, discover the anatomy of premium flavor.
-            </p>
-          </div>
-        ) : (
-          /* Selected State: Dark Product Box */
-          <div className="w-full bg-[#1c1a19] text-white p-8 sm:p-10 shadow-2xl rounded-md animate-in slide-in-from-bottom-8 fade-in duration-500 mt-4">
-            
+      {selectedCut && activeCutDetails && (
+        <div className="w-full max-w-6xl mx-auto px-6 mt-10 animate-in slide-in-from-bottom-8 fade-in duration-500 z-30">
+          <div className="w-full bg-[#1c1a19] text-white p-8 sm:p-10 shadow-2xl rounded-md">
+
             {/* Header of the Details Panel */}
             <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 border-b border-neutral-800 pb-6 mb-8">
               <div className="flex flex-col">
@@ -190,10 +225,10 @@ export default function BeefCutsHeroCentered() {
                   Retail Steaks
                 </span>
                 <h3 className="text-2xl md:text-3xl font-[var(--font-display)] font-light tracking-[0.15em] uppercase text-white">
-                  {activeCutDetails?.title ?? "Retail Cuts"}
+                  {activeCutDetails.title}
                 </h3>
               </div>
-              
+
               <button
                 onClick={() => setSelectedCut(null)}
                 className="group flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-400 hover:text-white transition-colors"
@@ -203,10 +238,10 @@ export default function BeefCutsHeroCentered() {
                 <X className="w-5 h-5 border border-neutral-700 rounded-full p-0.5 group-hover:border-white transition-colors" />
               </button>
             </div>
-            
+
             {/* Retail Steaks Grid */}
             <div className="w-full overflow-x-auto pb-4 custom-scrollbar">
-              {activeCutDetails && activeCutDetails.items.length > 0 ? (
+              {activeCutDetails.items.length > 0 ? (
                 <div className="flex sm:grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-6 gap-y-10 min-w-max sm:min-w-0">
                   {activeCutDetails.items.map((item, idx) => (
                     <div key={idx} className="flex flex-col items-center text-center group w-28 sm:w-auto">
@@ -234,8 +269,8 @@ export default function BeefCutsHeroCentered() {
               )}
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
     </section>
   );

@@ -61,28 +61,44 @@ export default function Home() {
       {/* ORIGINAL HOMEPAGE CONTENT                 */}
       {/* ========================================= */}
 
-      {/* ABOUT QUOTE */}
-      <section id="about" className="mx-auto max-w-5xl px-6 py-20 relative z-10">
-        <div className="flex flex-col md:flex-row items-center gap-10 reveal">
-          <img src="/images/steak-small.jpg" alt="Steak" loading="lazy" className="h-48 w-48 object-cover rounded-sm shadow-lg hover-scale" />
-          <div className="flex-1">
-            <h2 className="font-[var(--font-display)] text-2xl md:text-3xl font-bold uppercase tracking-wide leading-tight">
-              ACC IS NOT JUST A MARK <br /> OF PREMIUM BEEF QUALITY
+      {/* ABOUT · PHILOSOPHY CTA */}
+      <section id="about" className="mx-auto max-w-5xl px-6 py-16 relative z-10">
+        <div className="reveal relative overflow-hidden rounded-2xl bg-[#2c2623] text-[#fcfaf6] px-8 py-12 sm:px-14 sm:py-16 shadow-xl">
+          {/* oversized brand watermark adds depth without clutter */}
+          <span className="pointer-events-none absolute -right-8 -top-20 select-none font-[var(--font-display)] text-[220px] font-bold leading-none tracking-tighter text-white/[0.04]">
+            ACC
+          </span>
+
+          <div className="relative mx-auto flex max-w-2xl flex-col items-center text-center">
+            {/* eyebrow */}
+            <span className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.3em] text-[#e52d27]">
+              <span className="h-px w-6 bg-[#e52d27]/60" />
+              The ACC Philosophy
+              <span className="h-px w-6 bg-[#e52d27]/60" />
+            </span>
+
+            {/* headline */}
+            <h2 className="mt-6 font-[var(--font-display)] text-3xl sm:text-4xl font-bold uppercase leading-[1.15] tracking-wide">
+              Not just a mark of <span className="text-[#e52d27]">premium beef</span> quality
             </h2>
-            <p className="mt-5 font-[var(--font-serif)] text-[13px] leading-relaxed text-[#2c2623]/70 max-w-lg">
-              It is a lifestyle and a particular philosophy of eating meat as the main source of natural proteins — essential for the health and vitality of any modern person.
+
+            {/* supporting copy — merges the original intro + quote into one statement */}
+            <p className="mt-5 max-w-xl font-[var(--font-serif)] italic text-[15px] leading-relaxed text-[#fcfaf6]/65">
+              It&apos;s a lifestyle — a philosophy of eating meat as the main source of natural protein. ACC is never content with merely good; it demands{" "}
+              <span className="not-italic font-semibold text-[#fcfaf6]/90">only the very best.</span>
             </p>
+
+            {/* CTA */}
+            <div className="mt-9">
+              <a
+                href="#cuts"
+                className="group relative inline-flex items-center overflow-hidden border border-[#e52d27] px-8 py-3.5 text-[11px] font-bold uppercase tracking-[0.2em] text-[#e52d27] transition-colors hover:text-white"
+              >
+                <span className="absolute inset-0 -translate-x-full bg-[#e52d27] transition-transform duration-500 group-hover:translate-x-0" />
+                <span className="relative">Explore the Cuts</span>
+              </a>
+            </div>
           </div>
-        </div>
-        <div className="relative mt-14 flex items-stretch reveal">
-          <div className="bg-[#2c2623] text-[#fcfaf6] flex-1 px-10 py-10">
-            <p className="font-[var(--font-serif)] italic text-xl md:text-2xl leading-relaxed">
-              ACC is not content with <br />
-              merely good — it demands <br />
-              <span className="text-[#e52d27]">only the very best.</span>
-            </p>
-          </div>
-          <img src="/images/cleaver.png" alt="" loading="lazy" className="hidden md:block w-40 -ml-6 object-contain float-mid" />
         </div>
       </section>
 
@@ -128,7 +144,7 @@ export default function Home() {
       </section>
 
       {/* MARBLING DARK BAND */}
-      <section className="relative bg-[#2c2623] text-white py-20 z-10">
+      <section id="marbling" className="relative bg-[#2c2623] text-white py-20 z-10">
         <div className="mx-auto max-w-5xl px-6 grid md:grid-cols-2 gap-12 items-center">
           <img src="/images/steak-board.jpg" alt="Marbling" loading="lazy" className="w-full object-cover shadow-2xl genie" />
           <div className="reveal">
@@ -180,8 +196,8 @@ export default function Home() {
             <span className="relative transition-colors group-hover:text-white">Where to try it?</span>
           </button>
         </div>
-        <div className="mt-12 text-center font-[var(--font-serif)] italic text-[13px] text-gray-500">
-          On our <a href="#" className="text-[#e52d27] underline">blog</a> we share many recipes for delicious dishes made with ACC
+        <div id="blog" className="mt-12 text-center font-[var(--font-serif)] italic text-[13px] text-gray-500">
+          On our <a href="#blog" className="text-[#e52d27] underline">blog</a> we share many recipes for delicious dishes made with ACC
         </div>
       </section>
 
@@ -249,12 +265,18 @@ function Navbar() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-  const links = [
-    { href: "#about", label: "About" },
-    { href: "#cuts", label: "Cuts" },
+  // Links split around the centered logo, matching the reference layout.
+  // Each maps to an actual section anchor on the page.
+  const leftLinks = [
+    { href: "#about", label: "About ACC" },
     { href: "#try", label: "Try it" },
+    { href: "#cuts", label: "The Cuts" },
+  ];
+  const rightLinks = [
+    { href: "#marbling", label: "Marbling & Feed" },
     { href: "#contacts", label: "Contacts" },
   ];
+  const allLinks = [...leftLinks, ...rightLinks, { href: "#blog", label: "Blog" }];
   return (
     <header
       className={
@@ -264,59 +286,68 @@ function Navbar() {
           : "bg-[#fcfaf6] border-b border-transparent")
       }
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 h-20">
-        <a href="#" className="group flex items-center gap-3">
-          <div className="bg-[#e52d27] text-white font-bold p-2 text-xs tracking-wider">
-            ACC
-          </div>
-          <span className="hidden sm:flex flex-col leading-none">
-            <span className="font-[var(--font-display)] text-xl font-bold tracking-[0.35em] text-[#2c2623]">A C C</span>
-            <span className="font-[var(--font-serif)] italic text-[10px] text-gray-500 mt-0.5">Angus · Choice · Cuts</span>
-          </span>
-        </a>
-
-        {/* Updated Menu Color to deep brand color #2c2623 */}
-        <nav className="hidden md:flex items-center gap-9 text-[11px] uppercase tracking-[0.22em] text-[#2c2623] font-bold">
-          {links.map((l) => (
-            <a key={l.href} href={l.href} className="hover:text-[#e52d27] transition-colors">
+      <div className="mx-auto grid grid-cols-[1fr_auto_1fr] items-center px-6 h-20 max-w-7xl gap-4">
+        {/* LEFT NAV */}
+        <nav className="hidden md:flex items-center justify-end gap-8 text-[11px] uppercase tracking-[0.22em] text-[#2c2623] font-bold">
+          {leftLinks.map((l) => (
+            <a key={l.href} href={l.href} className="hover:text-[#e52d27] transition-colors whitespace-nowrap">
               {l.label}
             </a>
           ))}
         </nav>
 
-        <div className="flex items-center gap-4">
-          <span className="hidden sm:inline-flex items-center gap-1.5 border border-gray-200 px-3 py-1.5 text-[10px] font-bold tracking-widest text-[#2c2623] bg-white">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#e52d27]" /> EN
+        {/* CENTER LOGO */}
+        <a href="#" className="group flex flex-col items-center leading-none md:px-6">
+          <span className="font-[var(--font-display)] text-2xl font-bold tracking-[0.4em] text-[#2c2623] pl-[0.4em]">
+            A C C
           </span>
-          {/* Order Now button completely removed here */}
-          <button
-            aria-label="Menu"
-            onClick={() => setOpen((v) => !v)}
-            className="md:hidden grid place-items-center h-9 w-9 border border-gray-200 bg-white"
+          <span className="font-[var(--font-serif)] italic text-[10px] text-gray-500 mt-1 tracking-wide">
+            · Angus Choice Cuts ·
+          </span>
+        </a>
+
+        {/* RIGHT NAV */}
+        <nav className="hidden md:flex items-center justify-start gap-8 text-[11px] uppercase tracking-[0.22em] text-[#2c2623] font-bold">
+          {rightLinks.map((l) => (
+            <a key={l.href} href={l.href} className="hover:text-[#e52d27] transition-colors whitespace-nowrap">
+              {l.label}
+            </a>
+          ))}
+          <a
+            href="#blog"
+            className="bg-[#e52d27] text-white px-2.5 py-1 tracking-[0.18em] transition-opacity hover:opacity-85 whitespace-nowrap"
           >
-            <span className="sr-only">Toggle menu</span>
-            <div className="flex flex-col gap-1.5">
-              <span className={"h-0.5 w-5 bg-[#2c2623] transition-transform " + (open ? "translate-y-2 rotate-45" : "")} />
-              <span className={"h-0.5 w-5 bg-[#2c2623] transition-opacity " + (open ? "opacity-0" : "")} />
-              <span className={"h-0.5 w-5 bg-[#2c2623] transition-transform " + (open ? "-translate-y-2 -rotate-45" : "")} />
-            </div>
-          </button>
-        </div>
+            Blog
+          </a>
+        </nav>
+
+        {/* MOBILE TOGGLE (sits in right column on small screens) */}
+        <button
+          aria-label="Menu"
+          onClick={() => setOpen((v) => !v)}
+          className="md:hidden justify-self-end grid place-items-center h-9 w-9 border border-gray-200 bg-white"
+        >
+          <span className="sr-only">Toggle menu</span>
+          <div className="flex flex-col gap-1.5">
+            <span className={"h-0.5 w-5 bg-[#2c2623] transition-transform " + (open ? "translate-y-2 rotate-45" : "")} />
+            <span className={"h-0.5 w-5 bg-[#2c2623] transition-opacity " + (open ? "opacity-0" : "")} />
+            <span className={"h-0.5 w-5 bg-[#2c2623] transition-transform " + (open ? "-translate-y-2 -rotate-45" : "")} />
+          </div>
+        </button>
       </div>
 
       <div
         className={
           "md:hidden overflow-hidden border-t border-gray-200 bg-white backdrop-blur transition-[max-height,opacity] duration-500 " +
-          (open ? "max-h-80 opacity-100" : "max-h-0 opacity-0")
+          (open ? "max-h-96 opacity-100" : "max-h-0 opacity-0")
         }
       >
         <nav className="mx-auto max-w-6xl px-6 py-4 flex flex-col gap-3 text-[12px] uppercase tracking-[0.22em] font-bold text-[#2c2623]">
-          {links.map((l) => (
+          {allLinks.map((l) => (
             <a key={l.href} href={l.href} onClick={() => setOpen(false)} className="py-2 hover:text-[#e52d27] transition-colors border-b border-gray-50">
               {l.label}
             </a>
           ))}
-          {/* Order Now button completely removed from mobile menu here */}
         </nav>
       </div>
     </header>
